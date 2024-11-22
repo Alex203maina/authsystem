@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm, LoginForm
+from account.utils import send_registration_email
 
 @login_required(login_url='login')
 def index(request):
@@ -19,6 +20,8 @@ def user_registration(request):  # sourcery skip: extract-method
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            # send the registration email to user
+            send_registration_email(user)
             user.username = user.username.lower()
             user.save()
             messages.success(request, 'You have singed up successfully.')
